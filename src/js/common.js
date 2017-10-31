@@ -79,7 +79,7 @@ export function getString(msgNo,obj){
 			return url1
 			break;
         //群聊发送
-        case '0200':         
+        case '0202':         
             let url2 = '1'+msgNo+'{"timestamp":'+newDate()+',"body":{"content":"'+obj.val+'"},"msgId":""}'
             return url2
             break;

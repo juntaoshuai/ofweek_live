@@ -305,7 +305,21 @@ export default {
                             $this.kefuList = data.body
                             break
                         //群聊消息发送成功
-                        case '20200':
+                        case '20202':
+                            let arrVal1 = data.body
+							arrVal1.author.isKefu = false
+							arrVal1.content = lookimg(arrVal1.content)
+                            for(let m = 0;m < $this.kefuList.length;m++){
+                                if(arrVal1.author.userId == $this.kefuList[m].userId){
+                                    //如果是客服
+                                    arrVal1.author.isKefu = true
+                                }
+                            }
+							arrVal1.chatTime = dataTime(arrVal1.chatTime )
+                            $this.chathistory.unshift(arrVal1)
+							if(arrVal1.author.userId == userLogin.userId)
+								$this.changeNav(1)
+							$(".slide2 .content").scrollTop(0)
                             break;
                         //获取历史聊天
                         case  '20201':
@@ -403,6 +417,7 @@ export default {
                         //用户退出房间
                         case '21101':
                             break
+
                         //用户群聊通知
                         case '21200':
                             let arrVal = data.body

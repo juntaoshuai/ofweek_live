@@ -22,7 +22,7 @@
             <span class="closeBtn" @click="hide" id="close">×</span>
 
             <form id="loginForm" method="post">
-                <h3>请登录后继续观看</h3>
+                <h3>观众登录</h3>
                 <div class="input-item">
                     <input type="text" name="username" id="username" placeholder="用户名／邮箱／手机">
                 </div>
@@ -30,15 +30,7 @@
                     <input type="password" name="password" id="password" placeholder="密码">
                     <a href="http://m.ofweek.com/users/forgetPassword.xhtml" class="fr">忘记密码？</a>
                 </div>
-                
-
-                <input type="button" value="登录" class="login-btn" @click="onSubmit()">
-                <!-- <div class="other-login">
-                    <a href="http://expo.ofweek.com/thirdPartyLogin.xhtml?method=qqLogin&callback=cmVkaXJlY3Q6L2luZGV4L2Jvb3RoL2VudGVyLnhodG1sP2Jvb3RoSWQ9MTc2MSZtb2RlPTQmZXhwbz0yMDE" class="qq"></a>
-                    <a href="http://expo.ofweek.com/thirdPartyLogin.xhtml?method=weiboLogin&callback=cmVkaXJlY3Q6L2luZGV4L2Jvb3RoL2VudGVyLnhodG1sP2Jvb3RoSWQ9MTc2MSZtb2RlPTQmZXhwbz0yMDE" class="sina"></a>
-                </div> -->
-                <p class="reg">还不是OFweek会员，<a href="javascript:;" onclick="location.href = 'http://m.ofweek.com/users/register.xhtml?regType=15&returnurl= ' + location.href">免费注册</a></p>
-
+                <input type="button" value="登录" class="login-btn" id="alogin-btn" @click="onSubmit()">
             </form>
             <!--手机号登录-->
             <form id="mobileloginForm" method="post">
@@ -52,13 +44,18 @@
                 </div>
                 <input type="button" value="登录" class="login-btn" id="mlogin-btn">
             </form>
-            <div class="input-item" id="login-code">
-                <input type="text" name="captcha" id="verifyCode" placeholder="验证码">
-                <img width="80" height="32" src="/servlet/validateCodeServlet?width=80&height=32" onclick="this.src='/servlet/validateCodeServlet?width=80&amp;height=32&amp;t=' + Math.random()" class="code">               
-            </div>
+            <p class="switch">			
+				<input type="button" value="手机快捷登录" class="switch-btn">
+			</p>		
+			<div class="other-login">
+		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=qqLogin&callback='+location.href" class="qq"></a>
+		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=weiboLogin&callback='+location.href" class="sina"></a>
+			</div>
+			<p class="reg">还不是OFweek会员，<a href="javascript:;" onclick="location.href = 'http://m.ofweek.com/users/register.xhtml?regType=15&returnurl= ' + location.href">免费注册</a>
+			</p>
 
+			<div id="login-code" class="input-item"><input type="text" name="captcha" id="verifyCode" placeholder="验证码"> <img width="80" height="32" src="/servlet/validateCodeServlet?width=80&amp;amp;height=32&amp;amp;t=0.06074978317998436" onclick="this.src='/servlet/validateCodeServlet?width=80&amp;height=32&amp;t=' + Math.random()" class="code"></div>
 
-            
         </div>
     </div>
 </template>
@@ -141,7 +138,7 @@
 
                                 if (data.data.isValidateCodeLogin) {
                                     $("#diaglog").addClass("codeAfterDiaglog");
-                                    $("#login-code").insertBefore('.login-btn').show();
+                                    $("#login-code").insertBefore('#alogin-btn').show();
                                 }
 
                             }
@@ -178,7 +175,7 @@
             }
 		},
         mounted(){
-                            var $loginForm = $("#loginForm"),
+                var $loginForm = $("#loginForm"),
                     $mloginFrom = $("#mobileloginForm"),
                     $aloginBtn = $("#alogin-btn"),
                     $mloginBtn = $("#mlogin-btn"),
@@ -190,7 +187,6 @@
                     isSubmit = true,
                     isMSubmit = true,
                     $this=this;
-
 
             $(".switch-btn").click(function(){
                 var $this=$(this);
@@ -213,7 +209,7 @@
             return false;
         } else {
             $.ajax({
-                url: 'http://expo.ofweek.com/api/exhibition/checkMobileMailExsit.xhtml',
+                url: 'http://live.ofweek.com/api/aud/login/checkMobileMailExsit',
                 data: { mobile: $mobile.val() },
                 dataType: 'json',
                 async: false,
@@ -222,10 +218,8 @@
                         $this.showMessage("手机号未注册，请先注册")
                         mobilePass = false
                         return;
-
                     }
                     mobilePass = true
-
                 }
             })
         }
@@ -262,7 +256,7 @@
             $this.showMessage('请输入动态密码');
             return
         }
-        var codeReg=/^\d+$/
+        var codeReg = /^\d+$/
         if (!codeReg.test($code.val())) {
             $this.showMessage('动态密码不正确');
             return
@@ -275,7 +269,7 @@
             //手机登录提交
             $mloginBtn.val("正在登录中...");
             $.ajax({
-                url: 'http://expo.ofweek.com/api/exhibition/quickLogin.xhtml',
+                url: 'http://live.ofweek.com/api/aud/login/quickLogin',
                 type: 'POST',
                 dataType: 'json',
                 data: formContent,
@@ -319,7 +313,7 @@
 
                 $.ajax({
                     dataType: "json",
-                    url: 'http://expo.ofweek.com/api/exhibition/sendSMSValicode.xhtml',
+                    url: 'http://live.ofweek.com/api/aud/login/sendSMSValicode',
                     data: { mobile: $mobile.val() },
                     success: function(rs) {
                         //status:0表示发送验证码成功；1表示发送验证码失败；3表示发送到达上限；   6表示验证码已发送，60s不能再发
@@ -361,30 +355,39 @@
 </script>
 
 <style>
-.pop{width: 100%;height: 100%;position: fixed;z-index: 8000;background: rgba(0,0,0,.67);top: 0;left: 0;}
-.login_warm{height: 5.6rem;width: 100%;position: fixed;z-index: 8001;bottom: 0;left: 0;margin-top: -2.6rem;background: #fff;padding-top: .35rem;}
+/* #diaglog,#pop{display:none}  */
+.pop{width: 100%;height: 100%;position: absolute;z-index: 8000;background: rgba(0,0,0,.67);top: 0;left: 0;}
+.login_warm{/*height: 6.5rem;*/width: 100%;position: absolute;z-index: 8001;bottom: 0;left: 0;background: #fff;padding-top: .35rem;}
 
 .login_warm span.closeBtn{font-size: .42rem;font-weight: bold; color:#b4b4b4;position: absolute;right: .1rem;top: .1rem;background-size: 100% 100%;text-align: center;}
 #diaglog form{padding:0 .32rem;}
-#diaglog form + .input-item{display: none;}
+#diaglog form + form{display: none;}
+.reg + .input-item{display: none;}
 #diaglog form h3{text-align: center;font-size: .36rem;line-height: .42rem; color:#333;font-weight: normal;}
-#diaglog .input-item{border-bottom: 1px solid #EFEFEF;height: .8rem;line-height: .8rem;margin-top: .14rem;padding:0 .1rem;position: relative;}
-#diaglog .input-item input{border:none;width:100%;font-size: .32rem;}
+#diaglog .input-item{border-bottom: 1px solid #EFEFEF;height: .8rem;line-height: .8rem;margin-top: .34rem;padding:0 .1rem;position: relative;}
+#diaglog .input-item input{border:none;width:100%;font-size: .32rem;background: #fff;}
 #diaglog a{font-size: .28rem;color: #0084FF;}
 .input-item:nth-of-type(2){padding-right: 1.5rem !important;}
 .input-item:nth-of-type(3){padding-right: 90px !important;}
 .input-item a,.code{position: absolute;right:0;top:0;}
+#diaglog input[name='code']+a{color:#b4b4b4;}
+#diaglog input[name='code']+a.active{color:#0084FF;}
 
-#diaglog .login-btn{height: .8rem;background: #c00;line-height: .8rem;font-size: .32rem;color:#fff;width:100%;border:none;border-radius: .08rem;margin-top: .3rem;}
-.reg{font-size: .28rem;line-height: .4rem; color: #B4B4B4;margin-top: .2rem;text-align: center;}
-.other-login{font-size: 0;text-align: center;margin-top: .68rem;}
+#diaglog .login-btn{height: .8rem;background: #c00;line-height: .8rem;font-size: .32rem;color:#fff;width:100%;border:none;border-radius: .08rem;margin-top: .48rem;}
+.reg{font-size: .28rem;line-height: .4rem; color: #B4B4B4;margin-top: .3rem;margin-bottom: .1rem;text-align: center;}
+.other-login{font-size: 0;text-align: center;margin-top: .3rem;}
 .other-login a{display: inline-block;width:.76rem;height: .76rem;background:url(../assets/QQ.png) 0 0 no-repeat;background-size: contain;}
 .other-login .qq{margin-right: .78rem;}
 .other-login .sina{background-image:url(../assets/sina.png);}
 
+.switch{margin:.32rem .32rem 0;}
+.switch-btn{width:100%;height: .8rem;line-height: .8rem; border: 1px solid #DEDEDE;border-radius: .08rem;background: #fff;font-size: .32rem;color:#333;}
+
 .codeAfterDiaglog .input-item{margin-top: .14rem !important;}
 .codeAfterDiaglog .login-btn{margin-top: .4rem !important;}
-.codeAfterDiaglog .other-login{margin-top: .34rem !important;}
+.codeAfterDiaglog .other-login{margin-top: .25rem !important;}
+.codeAfterDiaglog .reg{margin-top: .15rem;}
+
 .v-modal{z-index: 9000 !important;}
 .mint-msgbox-wrapper{z-index: 9001 !important;}
 .mint-msgbox{font-size: 14px;border-radius: .24rem;}

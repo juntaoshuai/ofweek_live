@@ -11,7 +11,7 @@
     	
     	<div class="look" v-show="show">
 			<ul>
-				<li v-for="(val,key) in lookArr" @click="lookBtn(key)">
+				<li v-for="(val,key) in lookArr" :key="key" @click="lookBtn(key)">
 					<img :src="url+val+'.png'" alt="">
 				</li>
 			</ul>
@@ -65,7 +65,7 @@ import {lookUrl,lookStr,getString,stopVideo} from '../js/common'
 				}else{
 					let objChat = {}
 					objChat.val = this.val
-					let url = getString('0200',objChat)
+					let url = getString('0202',objChat)
 					webSocket.send(url)
 					this.val = ''
 				}
