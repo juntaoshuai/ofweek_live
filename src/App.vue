@@ -3,7 +3,7 @@
 	<headerload></headerload>
 	<loader v-if="ismodel == 10" :notice=notice></loader>
     <my-header :room="roomMes" :is-project=isProject></my-header>
-    <my-video :review-url=reviewUrl :room="room" :model="ismodel" :is-video="isVideo" :hlsdownstream="hlsdownstream" :pptimg="pptimg" :vodvideo="vodvideo" :registered="registered" :hlsimg="hlsimg" :vodliving=vodliving></my-video>
+    <my-video :user="user" :review-url=reviewUrl :room="roomMes" :model="ismodel" :is-video="isVideo" :hlsdownstream="hlsdownstream" :pptimg="pptimg" :vodvideo="vodvideo" :registered="registered" :hlsimg="hlsimg" :vodliving=vodliving></my-video>
     <my-nav v-if="isProject==1" v-on:change="changeNav" :active="active"></my-nav>
     <my-nav1 v-if="isProject==0" v-on:change="changeNav" :active="active" :model="roomStatus"></my-nav1>
 	<section>
@@ -133,6 +133,7 @@ export default {
 			val:0,							//人气值
 			reviewUrl:bgImg,					//回顾图
 			roomStatus:0,					//房间状态
+            user: {} //用户信息
 		}
 	},
 	mounted:function(){		
@@ -192,6 +193,7 @@ export default {
                             }else{
 								$this.notice = data.message
 							}
+                            $this.user = data.body.user
 
                             //房间在线人数
                             $this.count = data.body.onlineCount
@@ -227,6 +229,7 @@ export default {
 							$this.isProject = data.body.isProject
                             $this.roomMes = data.body
 							$this.roomMes.startTime =  dataTime($this.roomMes.startTime)
+                            
 							$this.roomMes.endTime =  dataTime($this.roomMes.endTime)
                             //获取房间信息,判断开始时间是否有效
                             var now = new Date();
@@ -234,8 +237,10 @@ export default {
                             
                             var startDate = new Date(start)
                             //var time = dataTime(start)
+                            
                             var tol = (start - now)/1000
                             tol = parseInt(tol)
+
 
                             $this.contactShow = data.body.contactShow
                             status = data.body.status
@@ -267,38 +272,7 @@ export default {
                                 }
                             }
 
-                            //倒计时
-                            function timeUpdate(){
-                                now = new Date();
-                    
-                                tol = (startDate - now)/1000;
-                                tol = parseInt(tol);
 
-                                if($this.ismodel != 1)  //如果不在直播预告状态
-                                    return                                
-
-                                if(tol <= 0){
-                                    $this.ismodel = 7
-                                    return
-                                }
-								
-                                var day=Math.floor(tol/(60*60*24)); 
-                                var hour=Math.floor((tol-day*24*60*60)/3600); 
-                                var minute=Math.floor((tol-day*24*60*60-hour*3600)/60);
-                                var second=Math.floor(tol-day*24*60*60-hour*3600-minute*60); 
-
-                                $(".notice .d .fl").text(parseInt(day/10));
-                                $(".notice .d .fr").text(day%10);
-                                $(".notice .h .fl").text(parseInt(hour/10));
-                                $(".notice .h .fr").text(hour%10);
-                                $(".notice .m .fl").text(parseInt(minute/10));
-                                $(".notice .m .fr").text(minute%10);
-                                $(".notice .s .fl").text(parseInt(second/10));
-                                $(".notice .s .fr").text(second%10);
-                            }
-                            if($this.ismodel == 1)
-                                setInterval(timeUpdate,1000)
-                            //倒计时结束
 
                             break;
                         case '20301':
