@@ -195,6 +195,7 @@ export default {
 							}
                             $this.user = data.body.user
 
+
                             //房间在线人数
                             $this.count = data.body.onlineCount
                             $this.val = data.body.presentCount
@@ -228,8 +229,8 @@ export default {
 							$this.isProject = data.body.isProject
                             $this.roomMes = data.body
 							$this.roomMes.startTime =  dataTime($this.roomMes.startTime)
-                            
 							$this.roomMes.endTime =  dataTime($this.roomMes.endTime)
+
                             //获取房间信息,判断开始时间是否有效
                             var now = new Date();
                             var chaTime = now
@@ -262,7 +263,7 @@ export default {
                                 }else if(status == 0){
                                     if(tol > 0) 
                                         $this.ismodel = 1
-                                    else{            //倒计时结束，直播即将开始
+                                    else{   //倒计时结束，直播即将开始
                                         $this.ismodel = 7
                                     }
                                 }else if(status == 2){
@@ -470,6 +471,7 @@ export default {
                         //房间状态改变通知
                         case '21300':
 							$this.roomStatus = data.body.status
+                            $this.roomMes.status = data.body.status
                             //结束房间直播
                             if(data.body.status == 4){
                                 $this.ismodel = 4

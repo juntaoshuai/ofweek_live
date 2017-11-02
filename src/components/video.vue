@@ -30,14 +30,18 @@
                 </li>
             </ul>
             <a v-if="registered" class="start-notice bgGray" href="javascript:;">已预约</a>
-            <span v-else class="start-notice no_btn" @click="book">预约直播</span>
-            <p class="pay-tips" v-if="!user.payStatus">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
+            <span v-else class="start-notice no_btn" @click="book">预约直播</span>          
         </div>
 
-        <!-- 时间到了直播未开始 -->
+       <!-- 时间到了直播未开始 -->
         <div class="wait" v-if="model==7 || model==3">
             直播即将开始
         </div>
+
+      <!--直播预告-->
+      <div v-if="room.status == 0">
+        <p class="pay-tips" v-if="!user.payStatus">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
+      </div>
 
         <!--直播中和直播回顾-->
         <div class="liv-pay" v-if="(room.status == 2 || room.status == 4) && !user.payStatus">
@@ -54,14 +58,14 @@
         <!-- 直播结束 -->
         <div class="living_end" v-if="model==6 && !isPlaying">
             <h2 v-if="isVideo==2" class="look_notice">直播已结束，感谢收看。<br>敬请期待直播回顾</h2>
-            <p v-if="isVideo==1" @click="clickPlay()">
+            <p v-if="isVideo==1 && user.payStatus" @click="clickPlay()">
             	<span></span>
             </p>
         </div>
         
 
         <!-- ppt直播 -->
-        <div class="ppt_living" v-if="model==5">
+        <div class="ppt_living" v-if="model == 5 && user.payStatus">
 			<!--<p>如果您听不到直播声音，建议用电脑观看PPT直播。</p>-->
            <audio id="media_audio" webkit-playsinline="" controls  autoplay playsinline="" v-bind:src=hlsdownstream>
                 (#_#) 你的设备不支持播放视频直播... 
@@ -70,7 +74,7 @@
         </div>
         
         <!-- 视频直播 -->
-        <div class="vodlook" v-if="model==8 && user.payStatus">
+        <div class="vodlook" v-if="model == 8 && user.payStatus">
             <video v-bind:src="vodliving" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="vodliving"></video>
         </div>
 
@@ -82,7 +86,7 @@
 </template>
 
 <script>
-import { getString , showLogin} from "../js/common";
+import { getString, showLogin } from "../js/common";
 export default {
   props: {
     room: {
@@ -144,7 +148,7 @@ export default {
     //预定
     book: function() {
       if (userLogin.loginType == 2) {
-        this.$parent.loginShow = true;
+        showLogin();
         return;
       }
       let url = getString("0105");
@@ -156,7 +160,7 @@ export default {
     playing: function() {
       this.isPlaying = true;
     },
-    
+
     buy() {
       if (userLogin.loginType == 2) {
         showLogin();
@@ -165,7 +169,7 @@ export default {
       location.href = this.payUrl;
     },
     login() {
-        showLogin();      
+      showLogin();
     }
   },
   watch: {
@@ -188,7 +192,7 @@ export default {
           return;
 
         if (tol <= 0) {
-          $this.$parent.ismodel = 7;
+          this.$parent.ismodel = 7;
           return;
         }
 
@@ -272,8 +276,7 @@ video,
   text-align: center;
   font-size: 0.32rem;
   color: #fff;
-  margin-top: .44rem;
-
+  margin-top: 0.44rem;
 }
 .living_end {
   position: relative;
@@ -317,10 +320,11 @@ video,
   left: 0;
   top: 1rem;
 }
+
 .notice {
-  height: 100%;
   text-align: center;
 }
+
 .notice h4 {
   color: #fff;
   font-size: 0.28rem;
@@ -385,7 +389,7 @@ video,
   font-size: 0.28rem;
   color: #fff;
   margin-top: 0.44rem;
-  text-align: center
+  text-align: center;
 }
 .pay-tips a {
   color: #5aabff;
@@ -395,11 +399,11 @@ video,
   font-size: 0;
   text-align: center;
 }
-.liv-pay a{
+.liv-pay a {
   display: inline-block;
+  margin: 0.44rem 0.32rem 0;
 }
 .liv-pay .btn1 {
-  background: #E0E0E0;
-  margin: 0 .32rem;
+  background: #e0e0e0;
 }
 </style>
