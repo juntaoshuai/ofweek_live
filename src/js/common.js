@@ -126,6 +126,18 @@ export function getString(msgNo,obj){
 	}
 }
 
+export function showLogin(){
+    document.getElementById("pop").style.display = "block"
+    document.getElementById("diaglog").style.display = "block"
+    stopVideo()
+}
+
+export function closeLogin(){
+    document.getElementById("pop").style.display = "none"
+    document.getElementById("diaglog").style.display = "none"
+    showVideos()
+}
+
 function stop(ele){
     //视频隐藏且停止播放
     if($(ele).length){

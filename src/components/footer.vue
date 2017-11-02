@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {lookUrl,lookStr,getString,stopVideo} from '../js/common'
+import {lookUrl,lookStr,getString ,showLogin} from '../js/common'
     export default {
 		name:"footer",
         data () {
@@ -54,8 +54,7 @@ import {lookUrl,lookStr,getString,stopVideo} from '../js/common'
 				this.show = !this.show
 			},
 			loginShow:function(){
-				this.$parent.loginShow = true
-				stopVideo();
+				showLogin();
 			},
 			sendMess:function(){
 				let ival = this.val = this.val.replace(/(^\s+)|(\s+$)/g,"");

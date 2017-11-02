@@ -4,7 +4,7 @@
             <img class="play-icon" src="../assets/play.png">
         </div>
         <!-- 视频直播 -->
-        <div class="vedio" v-if="model==0">
+        <div class="vedio" v-if="model==0 && user.payStatus">
             <video v-if="hlsdownstream" id="hlsVideo" v-bind:src=hlsdownstream v-bind:poster="hlsimg" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline
  controls autoplay></video>
             <div v-if="!hlsdownstream" class="wait">
@@ -14,29 +14,42 @@
 
         <!-- 直播预告 -->
         <div class="notice" v-if="model==1">
-            <h4>开播倒计时</h4>
+            <h4>直播倒计时</h4>
             <ul class="clearfix">
                 <li class="d">
-                    <span>{{day}}</span>
-                    天:
+                    <span>{{day}}</span>天:
                 </li>
                 <li class="h">
-                    <span>{{hour}}</span>
-                    时:
+                    <span>{{hour}}</span>时:
                 </li>
                 <li class="m">
-                    <span>{{minute}}</span>
-                    分:
+                    <span>{{minute}}</span>分:
                 </li>
                 <li class="s">
-                    <span>{{second}}</span>
-                    秒
+                    <span>{{second}}</span>秒
                 </li>
             </ul>
             <a v-if="registered" class="start-notice bgGray" href="javascript:;">已预约</a>
             <span v-else class="start-notice no_btn" @click="book">预约直播</span>
-            <p class="pay-tips" v-if="!user.payStatus && room.isPay">该直播须付费才能观看，付费请点击<a href="#">立即购买</a></p>
+            <p class="pay-tips" v-if="!user.payStatus">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
         </div>
+
+        <!-- 时间到了直播未开始 -->
+        <div class="wait" v-if="model==7 || model==3">
+            直播即将开始
+        </div>
+
+        <!--直播中和直播回顾-->
+        <div class="liv-pay" v-if="(room.status == 2 || room.status == 4) && !user.payStatus">
+          <p class="pay-tips">
+              本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
+          </p>
+          <p class="pay-opera">
+            <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
+            <a href="javascript:;" class="start-notice btn2" @click="buy">立刻购买</a>
+          </p>
+        </div>
+
 
         <!-- 直播结束 -->
         <div class="living_end" v-if="model==6 && !isPlaying">
@@ -45,10 +58,7 @@
             	<span></span>
             </p>
         </div>
-        <!-- 时间到了直播未开始 -->
-        <div class="wait" v-if="model==7 || model==3">
-            直播即将开始，请耐心等待
-        </div>
+        
 
         <!-- ppt直播 -->
         <div class="ppt_living" v-if="model==5">
@@ -60,19 +70,19 @@
         </div>
         
         <!-- 视频直播 -->
-        <div class="vodlook" v-if="model==8">
+        <div class="vodlook" v-if="model==8 && user.payStatus">
             <video v-bind:src="vodliving" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="vodliving"></video>
         </div>
 
         <!-- 查看回顾 -->
-        <div class="vodlook" v-if="model==6">
+        <div class="vodlook" v-if="model==6 && user.payStatus">
             <video v-bind:src="vodvideo" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="myAudio" onended="myFunction()"></video>
         </div>
     </nav>
 </template>
 
 <script>
-import { getString } from "../js/common";
+import { getString , showLogin} from "../js/common";
 export default {
   props: {
     room: {
@@ -111,11 +121,19 @@ export default {
   },
   data() {
     return {
+      isLogin: userLogin.loginType,
       isPlaying: false,
       day: 0,
       hour: 0,
       minute: 0,
-      second: 0
+      second: 0,
+      payUrl:
+        "http://live.ofweek.com/order/pay?userId=" +
+        userLogin.userId +
+        "&roomId=" +
+        userLogin.roomId +
+        "&source=WAP&backUrl=" +
+        location.href
     };
   },
   methods: {
@@ -137,35 +155,52 @@ export default {
     },
     playing: function() {
       this.isPlaying = true;
+    },
+    
+    buy() {
+      if (userLogin.loginType == 2) {
+        showLogin();
+        return;
+      }
+      location.href = this.payUrl;
+    },
+    login() {
+        showLogin();      
     }
   },
   watch: {
     room(newVal, oldVal) {
       //倒计时
 
-        //倒计时结束
-        setInterval(() => {
-             let now = new Date().getTime();
-       let tol = (new Date(newVal.startTime) - now) / 1000;
+      //倒计时结束
+      setInterval(() => {
+        let now = new Date();
+        let startTime = newVal.startTime;
+        //手机浏览器中直接 new Date('2017-12-13 11:11:00') 会报NaN错误，要把-替换成/
+        startTime = startTime.replace(/\-/g, "/");
+        startTime = new Date(startTime);
+        let tol = (startTime - now) / 1000;
+
         tol = parseInt(tol);
 
-        // if (this.model != 1)
-        //   //如果不在直播预告状态
-          
-        //   return;
+        if (this.model != 1)
+          //如果不在直播预告状态
+          return;
 
-        // if (tol <= 0) {
-        //   $this.$parent.ismodel = 7;
-        //   return;
-        // }
+        if (tol <= 0) {
+          $this.$parent.ismodel = 7;
+          return;
+        }
 
         this.day = Math.floor(tol / (60 * 60 * 24));
         this.hour = Math.floor((tol - this.day * 24 * 60 * 60) / 3600);
-        this.minute = Math.floor((tol - this.day * 24 * 60 * 60 - this.hour * 3600) / 60);
-        this.second = Math.floor(tol - this.day * 24 * 60 * 60 - this.hour * 3600 - this.minute * 60);
-        }, 1000);
-            
-      
+        this.minute = Math.floor(
+          (tol - this.day * 24 * 60 * 60 - this.hour * 3600) / 60
+        );
+        this.second = Math.floor(
+          tol - this.day * 24 * 60 * 60 - this.hour * 3600 - this.minute * 60
+        );
+      }, 1000);
     }
   }
 };
@@ -228,15 +263,17 @@ video,
   max-width: 100%;
 }
 
-.living_end,
-.wait {
+.living_end {
   text-align: center;
   font-size: 0.32rem;
   height: 100%;
 }
 .wait {
-  line-height: 4.05rem;
-  color: #ffffff;
+  text-align: center;
+  font-size: 0.32rem;
+  color: #fff;
+  margin-top: .44rem;
+
 }
 .living_end {
   position: relative;
@@ -287,39 +324,42 @@ video,
 .notice h4 {
   color: #fff;
   font-size: 0.28rem;
+  line-height: 0.82rem;
   font-weight: normal;
-  padding: 0.6rem 0 0.3rem 0;
+  padding: 0.2rem 0 0.3rem 3.3rem;
+  background: url(../assets/countdown.png) 2.5rem 0.2rem no-repeat;
+  background-size: 0.62rem 0.82rem;
+  text-align: left;
 }
 .notice ul {
-    text-align: center;
-    font-size: 0;
+  text-align: center;
+  font-size: 0;
 }
 .notice ul li {
-    font-size: 0.48rem;
-    line-height: 0.56rem;
-    display: inline-block;
-    padding: 0 0.15rem;
-    color: #fff;
+  font-size: 0.48rem;
+  line-height: 0.56rem;
+  display: inline-block;
+  padding: 0 0.15rem;
+  color: #fff;
 }
 
-/* .notice ul li span{display: block;width: .6rem;height: .77rem;background: url(../assets/timebg.png);background-size: 100% 100%;font-size: .6rem;line-height: .77rem;} */
 .notice ul li p {
   color: #fff;
   font-size: 0.24rem;
   margin-top: 0.8rem;
 }
+
 .start-notice {
   display: block;
-  width: 2.5rem;
-  height: 0.7rem;
-  line-height: 0.7rem;
+  width: 2.16rem;
+  height: 0.6rem;
+  line-height: 0.6rem;
   text-align: center;
-  font-size: 0.3rem;
+  font-size: 0.28rem;
   background: #c60000;
   color: #fff;
-  margin-top: 0.4rem;
-  border-radius: 0.04rem;
-  margin: 0.4rem auto 0 auto;
+  border-radius: 0.08rem;
+  margin: 0.44rem auto 0;
 }
 .clearfix:after {
   clear: both;
@@ -344,8 +384,22 @@ video,
   line-height: 0.4rem;
   font-size: 0.28rem;
   color: #fff;
+  margin-top: 0.44rem;
+  text-align: center
 }
 .pay-tips a {
   color: #5aabff;
+  margin-left: 0.3rem;
+}
+.pay-opera {
+  font-size: 0;
+  text-align: center;
+}
+.liv-pay a{
+  display: inline-block;
+}
+.liv-pay .btn1 {
+  background: #E0E0E0;
+  margin: 0 .32rem;
 }
 </style>

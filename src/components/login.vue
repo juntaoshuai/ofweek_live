@@ -61,7 +61,7 @@
 </template>
 <script>
     import { MessageBox } from 'mint-ui';
-    import {showVideos} from '../js/common.js'
+    import {showVideos,closeLogin} from '../js/common.js'
 
 
     export default {
@@ -87,9 +87,7 @@
                 });
             },
 			close:function(){
-				this.$parent.loginShow = false
-                showVideos();
-
+				closeLogin();
 			},
             onSubmit(){
                 let $loginForm=$("#loginForm"),
@@ -155,7 +153,7 @@
             },
             hide:function(){
                 //会员模式
-                if(this.watchMode==1){
+                if(this.watchMode == 1){
                     MessageBox.confirm('你确定要退出吗？建议登录后观看','',{
                         confirmButtonText:'确定退出',
                         cancelButtonText:'返回',
@@ -374,7 +372,7 @@
 #diaglog input[name='code']+a.active{color:#0084FF;}
 
 #diaglog .login-btn{height: .8rem;background: #c00;line-height: .8rem;font-size: .32rem;color:#fff;width:100%;border:none;border-radius: .08rem;margin-top: .48rem;}
-.reg{font-size: .28rem;line-height: .4rem; color: #B4B4B4;margin-top: .3rem;margin-bottom: .1rem;text-align: center;}
+.reg{font-size: .28rem;line-height: .4rem; color: #B4B4B4;margin-top: .2rem;margin-bottom: .2rem;text-align: center;}
 .other-login{font-size: 0;text-align: center;margin-top: .3rem;}
 .other-login a{display: inline-block;width:.76rem;height: .76rem;background:url(../assets/QQ.png) 0 0 no-repeat;background-size: contain;}
 .other-login .qq{margin-right: .78rem;}

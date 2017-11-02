@@ -51,7 +51,7 @@ import headerload from './components/headerload'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
 import {socket} from './js/socket'
-import {getString,dataTime,date,lookimg,stopVideo} from './js/common'
+import {getString,dataTime,date,lookimg , showLogin} from './js/common'
 import send from './js/send'
 
 export default {
@@ -220,8 +220,7 @@ export default {
                             // 游客进入游客模式展台，10秒后不应弹出登录弹框  
                             if($this.watchMode==1 && $this.loginType == 2){
                                 setTimeout(()=>{
-                                    $this.loginShow=true
-                                    stopVideo();
+                                    showLogin();
                                 },180000);   //180000
                             }
 

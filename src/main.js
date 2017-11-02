@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import { MessageBox } from 'mint-ui';
+import axios from 'axios'
+Vue.prototype.$http = axios
 Vue.component(MessageBox.name, MessageBox)
 require('swiper/dist/css/swiper.css')
 
