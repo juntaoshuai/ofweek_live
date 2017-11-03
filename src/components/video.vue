@@ -1,10 +1,10 @@
 <template>
     <nav class="myvedio" v-bind:style="{backgroundImage:'url('+reviewUrl+')'}">
-        <div class="play-view" v-if="model==0 || model==2 || model==3" v-show="!isPlaying" v-on:click="clickPlay()">
+        <div class="play-view" v-if="(model==0 || model==2 || model==3) && (user.payStatus || !room.isPay)" v-show="!isPlaying" v-on:click="clickPlay()">
             <img class="play-icon" src="../assets/play.png">
         </div>
         <!-- 视频直播 -->
-        <div class="vedio" v-if="model==0 && user.payStatus">
+        <div class="vedio" v-if="model==0 && (user.payStatus || !room.isPay)">
             <video v-if="hlsdownstream" id="hlsVideo" v-bind:src=hlsdownstream v-bind:poster="hlsimg" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline
  controls autoplay></video>
             <div v-if="!hlsdownstream" class="wait">
@@ -37,49 +37,58 @@
         <div class="wait" v-if="model==7 || model==3">
             直播即将开始
         </div>
-
-      <!--直播预告-->
-      <div v-if="room.status == 0">
-        <p class="pay-tips" v-if="!user.payStatus">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
-      </div>
-
-        <!--直播中和直播回顾-->
-        <div class="liv-pay" v-if="(room.status == 2 || room.status == 4) && !user.payStatus">
-          <p class="pay-tips">
-              本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
-          </p>
-          <p class="pay-opera">
-            <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
-            <a href="javascript:;" class="start-notice btn2" @click="buy">立刻购买</a>
-          </p>
+        
+        <!--直播结束 还没有回顾视频-->
+        <div class="wait" v-if="model == 6 && isVideo == 2">
+          直播已结束
         </div>
 
-
         <!-- 直播结束 -->
-        <div class="living_end" v-if="model==6 && !isPlaying">
-            <h2 v-if="isVideo==2" class="look_notice">直播已结束，感谢收看。<br>敬请期待直播回顾</h2>
-            <p v-if="isVideo==1 && user.payStatus" @click="clickPlay()">
+        <div class="living_end" v-if="(model == 6 && !isPlaying && isVideo == 1) && (user.payStatus || !room.isPay)">  
+            <p @click="clickPlay()">
             	<span></span>
             </p>
         </div>
-        
+
+      <!--直播预告-->
+      <div v-if="room.status == 0 && !user.payStatus && room.isPay">
+        <p class="pay-tips">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
+      </div>
+
+        <!--直播中和直播回顾-->
+        <div class="liv-pay" v-if="(room.status == 2 || room.status == 4)">
+          <div v-if="!user.payStatus && room.isPay"> 
+            <p class="pay-tips">
+                本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
+            </p>
+            <p class="pay-opera">
+              <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
+              <a href="javascript:;" class="start-notice btn2" @click="buy">立刻购买</a>
+            </p>
+          </div>
+        </div>
 
         <!-- ppt直播 -->
-        <div class="ppt_living" v-if="model == 5 && user.payStatus">
+        <div class="ppt_living" v-if="model == 5 && (user.payStatus || !room.isPay)">
 			<!--<p>如果您听不到直播声音，建议用电脑观看PPT直播。</p>-->
-           <audio id="media_audio" webkit-playsinline="" controls  autoplay playsinline="" v-bind:src=hlsdownstream>
+            <audio v-if="hlsVoiceDownstream" id="voice" v-bind:src="hlsVoiceDownstream" controls autoplay>
+               (#_#) 你的设备不支持播放视频直播... 
+            </audio>
+            
+            <audio v-else id="media_audio" webkit-playsinline playsinline controls  autoplay v-bind:src=hlsdownstream>
                 (#_#) 你的设备不支持播放视频直播... 
             </audio>
+
             <img v-bind:src="pptimg" alt="">
         </div>
         
         <!-- 视频直播 -->
-        <div class="vodlook" v-if="model == 8 && user.payStatus">
+        <div class="vodlook" v-if="model == 8 && (user.payStatus || !room.isPay)">
             <video v-bind:src="vodliving" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="vodliving"></video>
         </div>
 
         <!-- 查看回顾 -->
-        <div class="vodlook" v-if="model==6 && user.payStatus">
+        <div class="vodlook" v-if="model==6 && (user.payStatus || !room.isPay)">
             <video v-bind:src="vodvideo" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="myAudio" onended="myFunction()"></video>
         </div>
     </nav>
@@ -121,7 +130,10 @@ export default {
     },
     reviewUrl: {
       type: String
-    }
+    },
+    hlsVoiceDownstream: {
+			type: String
+		}
   },
   data() {
     return {
@@ -217,7 +229,7 @@ export default {
   float: right;
 }
 
-#media_audio {
+#media_audio,#voice {
   position: absolute;
   bottom: 0;
   left: 0;

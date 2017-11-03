@@ -3,7 +3,7 @@
 	<headerload></headerload>
 	<loader v-if="ismodel == 10" :notice=notice></loader>
     <my-header :room="roomMes" :is-project=isProject></my-header>
-    <my-video :user="user" :review-url=reviewUrl :room="roomMes" :model="ismodel" :is-video="isVideo" :hlsdownstream="hlsdownstream" :pptimg="pptimg" :vodvideo="vodvideo" :registered="registered" :hlsimg="hlsimg" :vodliving=vodliving></my-video>
+    <my-video :user="user" :review-url=reviewUrl :room="roomMes" :model="ismodel" :is-video="isVideo" :hlsdownstream="hlsdownstream" :pptimg="pptimg" :vodvideo="vodvideo" :registered="registered" :hlsimg="hlsimg" :vodliving=vodliving :hlsVoiceDownstream = "hlsVoiceDownstream"></my-video>
     <my-nav v-if="isProject==1" v-on:change="changeNav" :active="active"></my-nav>
     <my-nav1 v-if="isProject==0" v-on:change="changeNav" :active="active" :model="roomStatus"></my-nav1>
 	<section>
@@ -133,7 +133,8 @@ export default {
 			val:0,							//人气值
 			reviewUrl:bgImg,					//回顾图
 			roomStatus:0,					//房间状态
-            user: {} //用户信息
+            user: {},  //用户信息
+            hlsVoiceDownstream: ""
 		}
 	},
 	mounted:function(){		
@@ -194,7 +195,6 @@ export default {
 								$this.notice = data.message
 							}
                             $this.user = data.body.user
-
 
                             //房间在线人数
                             $this.count = data.body.onlineCount
@@ -433,6 +433,8 @@ export default {
                             $this.chatShow = true                            
                             if(data.body.type == "ppt_live"){                          
                                 //ppt直播
+                                $this.hlsVoiceDownstream = data.body.hlsVoiceDownstream
+                                
                                 $this.ismodel = 5
 
                                 //获取pptId
