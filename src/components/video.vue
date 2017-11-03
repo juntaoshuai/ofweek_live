@@ -63,7 +63,7 @@
             </p>
             <p class="pay-opera">
               <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
-              <a href="javascript:;" class="start-notice btn2" @click="buy">立刻购买</a>
+              <a href="javascript:;" class="start-notice btn2" @click="buy">立即购买</a>
             </p>
           </div>
         </div>
