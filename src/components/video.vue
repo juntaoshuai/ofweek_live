@@ -34,12 +34,12 @@
         </div>
 
        <!-- 时间到了直播未开始 -->
-        <div class="wait" v-if="model==7 || model==3">
-            直播即将开始
+        <div v-bind:class="[{ active: (user.payStatus || !room.isPay) }, waitClass]" v-if="model==7 || model==3">
+            直播即将开始，请耐心等待
         </div>
         
         <!--直播结束 还没有回顾视频-->
-        <div class="wait" v-if="model == 6 && isVideo == 2">
+        <div v-bind:class="[{ active: (user.payStatus || !room.isPay) }, waitClass]" v-if="model == 6 && isVideo == 2">
           直播已结束
         </div>
 
@@ -149,7 +149,8 @@ export default {
         "&roomId=" +
         userLogin.roomId +
         "&source=WAP&backUrl=" +
-        location.href
+        location.href,
+        waitClass: 'wait'
     };
   },
   methods: {
@@ -417,5 +418,9 @@ video,
 }
 .liv-pay .btn1 {
   background: #e0e0e0;
+}
+.wait.active {
+   line-height: 4.05rem;
+   margin-top: 0;
 }
 </style>

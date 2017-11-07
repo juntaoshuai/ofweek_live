@@ -47,10 +47,10 @@
             <p class="switch">			
 				<input type="button" value="手机快捷登录" class="switch-btn">
 			</p>		
-			<div class="other-login">
+			<!-- <div class="other-login">
 		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=qqLogin&callback='+location.href" class="qq"></a>
 		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=weiboLogin&callback='+location.href" class="sina"></a>
-			</div>
+			</div> -->
 			<p class="reg">还不是OFweek会员，<a href="javascript:;" onclick="location.href = 'http://m.ofweek.com/users/register.xhtml?regType=15&returnurl= ' + location.href">免费注册</a>
 			</p>
 
