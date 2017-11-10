@@ -29,6 +29,7 @@
                     <span>{{second}}</span>秒
                 </li>
             </ul>
+            <p class="fare" v-if="!user.payStatus && room.isPay">票价：¥ {{room.fare}}</p>
             <a v-if="registered" class="start-notice bgGray" href="javascript:;">已预约</a>
             <span v-else class="start-notice no_btn" @click="book">预约直播</span>          
         </div>
@@ -52,15 +53,17 @@
 
       <!--直播预告-->
       <div v-if="room.status == 0 && !user.payStatus && room.isPay">
-        <p class="pay-tips">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
+        
+        <p class="pay-tips" style="margin-top:.2rem;">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
       </div>
 
         <!--直播中和直播回顾-->
         <div class="liv-pay" v-if="(room.status == 2 || room.status == 4)">
-          <div v-if="!user.payStatus && room.isPay"> 
+          <div v-if="!user.payStatus && room.isPay">
             <p class="pay-tips">
                 本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
             </p>
+            <p class="fare">票价：¥ {{room.fare}}</p> 
             <p class="pay-opera">
               <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
               <a href="javascript:;" class="start-notice btn2" @click="buy">立即购买</a>
@@ -422,5 +425,15 @@ video,
 .wait.active {
    line-height: 4.05rem;
    margin-top: 0;
+}
+.fare {
+  font-size: .28rem;
+  line-height: .32rem;
+  color:#fff;
+  text-align: center;
+  margin-top:.2rem;
+}
+.fare + .start-notice {
+  margin-top:.1rem;
 }
 </style>

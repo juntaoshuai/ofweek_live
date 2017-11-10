@@ -138,6 +138,7 @@ const imgUrl  = "http://www.ofweek.com/live/topic.do?method=getPicGroupAjax"
 					jsonpCallback: 'jsonpCallback',
 					success: function(res) {
 						that.newArra = res
+						console.log(res)
 						if(res != "")
 							that.show1 = true
 					}
