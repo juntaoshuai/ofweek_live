@@ -126,7 +126,9 @@
                         data: formContent,
                         success: function (data) {
                             if (data.data.result){
-                                location.reload();
+                                //有些安卓机微信不支持location.reload()
+                                location.href = location.href;
+                                
                             } else {
 
                                 $this.showMessage(data.data.msg);
@@ -275,6 +277,7 @@
                     if (data.status == 0) {
                         //登录成功
                         location.reload();
+                        location.href = location.href;
                     } else {
                         if(data.status == 7){
                             $this.showMessage("验证码已过期，请重新获取验证码");
@@ -315,7 +318,7 @@
                     data: { mobile: $mobile.val() },
                     success: function(rs) {
                         //status:0表示发送验证码成功；1表示发送验证码失败；3表示发送到达上限；   6表示验证码已发送，60s不能再发
-                        if (rs.status == "0") {
+                        if (rs.status == "6") {
                             $this.showMessage("验证码已发送，请注意查收");
                             _this.html(iCount + "秒后重新发送");
                             timer = setInterval(function() {

@@ -3,6 +3,20 @@
         <div class="play-view" v-if="(model==0 || model==2 || model==3) && (user.payStatus || !room.isPay)" v-show="!isPlaying" v-on:click="clickPlay()">
             <img class="play-icon" src="../assets/play.png">
         </div>
+        <div id="loading" v-show="loadingShow">
+            <div class="content1">
+                <div class="arc1"></div>
+                <div class="arc2"></div>
+                <div class="arc3"></div>
+                <div class="arc4"></div>
+            </div>
+            <div class="content2">
+                <div class="arc1"></div>
+                <div class="arc2"></div>
+                <div class="arc3"></div>
+                <div class="arc4"></div>
+            </div>
+        </div>
         <!-- 视频直播 -->
         <div class="vedio" v-if="model==0 && (user.payStatus || !room.isPay)">
             <video v-if="hlsdownstream" id="hlsVideo" v-bind:src=hlsdownstream v-bind:poster="hlsimg" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline
@@ -40,13 +54,13 @@
         </div>
         
         <!--直播结束 还没有回顾视频-->
-        <div v-bind:class="[{ active: (user.payStatus || !room.isPay) }, waitClass]" v-if="model == 6 && isVideo == 2">
-          直播已结束
+        <div class="wait active" v-if="model == 6 && isVideo == 2 && (user.payStatus || !room.isPay)">
+          直播已结束，敬请期待直播回顾！
         </div>
 
         <!-- 直播结束 -->
         <div class="living_end" v-if="(model == 6 && !isPlaying && isVideo == 1) && (user.payStatus || !room.isPay)">  
-            <p @click="clickPlay()">
+            <p @click="clickPlay()" v-show="!isPlaying">
             	<span></span>
             </p>
         </div>
@@ -142,6 +156,7 @@ export default {
     return {
       isLogin: userLogin.loginType,
       isPlaying: false,
+      loadingShow: false,
       day: 0,
       hour: 0,
       minute: 0,
@@ -172,9 +187,13 @@ export default {
     },
     clickPlay: function() {
       document.querySelectorAll("video")[0].play();
+      this.isPlaying = true;      
+      this.loadingShow = true;
     },
     playing: function() {
       this.isPlaying = true;
+      this.loadingShow = false;
+      
     },
 
     buy() {
@@ -426,6 +445,7 @@ video,
    line-height: 4.05rem;
    margin-top: 0;
 }
+
 .fare {
   font-size: .28rem;
   line-height: .32rem;
@@ -436,4 +456,35 @@ video,
 .fare + .start-notice {
   margin-top:.1rem;
 }
+
+#loading{width:50px;height: 50px; position: absolute;left:50%;top:50%;margin: -25px 0 0 -25px;}
+#loading .content1 , #loading .content2{ width:50px; height:50px; position:absolute;}
+#loading .content1 div , #loading .content2 div{ width:16px; height:16px; background:#fff; position:absolute; border-radius:50%; animation:2s linear infinite loadingMove; -webkit-animation:2s linear infinite loadingMove;}
+#loading .content1 .arc1 , #loading .content2 .arc1{ left:0; top:0;}
+#loading .content1 .arc2 , #loading .content2 .arc2{ right:0; top:0;}
+#loading .content1 .arc3 , #loading .content2 .arc3{ right:0; bottom:0;}
+#loading .content1 .arc4 , #loading .content2 .arc4{ left:0; bottom:0;}
+#loading .content2{ transform:rotate(45deg); -webkit-transform:rotate(45deg);}
+@keyframes loadingMove{
+    0%{ transform:scale(1);}
+    50%{ transform:scale(0);}
+    100%{ transform:scale(1);}
+}
+@-webkit-keyframes loadingMove{
+    0%{ -webkit-transform:scale(1);}
+    50%{ -webkit-transform:scale(0);}
+    100%{ -webkit-transform:scale(1);}
+}
+
+#loading .content1 .arc1{ animation-delay:-1.5s;}
+#loading .content2 .arc1{ animation-delay:-1.3s;}
+#loading .content1 .arc2{ animation-delay:-1.1s;}
+#loading .content2 .arc2{ animation-delay:-0.9s;}
+#loading .content1 .arc3{ animation-delay:-0.7s;}
+#loading .content2 .arc3{ animation-delay:-0.5s;}
+#loading .content1 .arc4{ animation-delay:-0.3s;}
+#loading .content2 .arc4{ animation-delay:-0.1s;}
+
+
+
 </style>
