@@ -197,11 +197,17 @@ export default {
     },
 
     buy() {
-      if (userLogin.loginType == 2) {
-        showLogin();
-        return;
+      if(is_weixn()) {
+        alert("come")
+
+      }else{
+        if (userLogin.loginType == 2) {
+            showLogin();
+            return;
+        }
+        location.href = this.payUrl;
       }
-      location.href = this.payUrl;
+     
     },
     login() {
       showLogin();
