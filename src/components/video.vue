@@ -463,9 +463,9 @@ video,
   margin-top:.1rem;
 }
 
-#loading{width:50px;height: 50px; position: absolute;left:50%;top:50%;margin: -25px 0 0 -25px;}
-#loading .content1 , #loading .content2{ width:50px; height:50px; position:absolute;}
-#loading .content1 div , #loading .content2 div{ width:16px; height:16px; background:#fff; position:absolute; border-radius:50%; animation:2s linear infinite loadingMove; -webkit-animation:2s linear infinite loadingMove;}
+#loading{width:25px;height: 25px; position: absolute;left:50%;top:40%;margin:0 0 0 -12px;}
+#loading .content1 , #loading .content2{ width:25px; height:25px; position:absolute;}
+#loading .content1 div , #loading .content2 div{ width:8px; height:8px; background:#fff; position:absolute; border-radius:50%; animation:2s linear infinite loadingMove; -webkit-animation:2s linear infinite loadingMove;}
 #loading .content1 .arc1 , #loading .content2 .arc1{ left:0; top:0;}
 #loading .content1 .arc2 , #loading .content2 .arc2{ right:0; top:0;}
 #loading .content1 .arc3 , #loading .content2 .arc3{ right:0; bottom:0;}
