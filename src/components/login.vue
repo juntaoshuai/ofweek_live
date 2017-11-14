@@ -186,7 +186,7 @@
                     mobilePass = true,
                     isSubmit = true,
                     isMSubmit = true,
-                    $this=this;
+                    $this = this;
 
             $(".switch-btn").click(function(){
                 var $this=$(this);
@@ -318,7 +318,7 @@
                     data: { mobile: $mobile.val() },
                     success: function(rs) {
                         //status:0表示发送验证码成功；1表示发送验证码失败；3表示发送到达上限；   6表示验证码已发送，60s不能再发
-                        if (rs.status == "6") {
+                        if (rs.status == "0") {
                             $this.showMessage("验证码已发送，请注意查收");
                             _this.html(iCount + "秒后重新发送");
                             timer = setInterval(function() {
@@ -333,8 +333,12 @@
 
                             }, 1000);
                         } else {
+                            if(rs.status == "6"){
+                                $this.showMessage("验证码已发送，60s不能再发")
+                            } else {
+                                $this.showMessage(rs.msg)    
+                            }
                             _this.html("获取动态密码");
-                            $this.showMessage(rs.msg)
                             bClick = true;
 
                         }
