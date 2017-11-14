@@ -51,7 +51,7 @@
 		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=qqLogin&callback='+location.href" class="qq"></a>
 		  		<a href="javascript:;" onclick="window.location.href='http://expo.ofweek.com/thirdPartyLogin.xhtml?method=weiboLogin&callback='+location.href" class="sina"></a>
 			</div> -->
-			<p class="reg">还不是OFweek会员，<a href="javascript:;" onclick="location.href = 'http://m.ofweek.com/users/register.xhtml?regType=15&returnurl= ' + location.href">免费注册</a>
+			<p class="reg">还不是OFweek会员，<a href="javascript:;" onclick="location.href = 'http://m.ofweek.com/users/register.xhtml?regType=16&returnurl= ' + location.href">免费注册</a>
 			</p>
 
 			<div id="login-code" class="input-item"><input type="text" name="captcha" id="verifyCode" placeholder="验证码"> <img width="80" height="32" src="/servlet/validateCodeServlet?width=80&amp;amp;height=32&amp;amp;t=0.06074978317998436" onclick="this.src='/servlet/validateCodeServlet?width=80&amp;height=32&amp;t=' + Math.random()" class="code"></div>

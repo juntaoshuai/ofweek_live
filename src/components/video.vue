@@ -1,8 +1,12 @@
 <template>
     <nav class="myvedio" v-bind:style="{backgroundImage:'url('+reviewUrl+')'}">
-        <div class="play-view" v-if="(model==0 || model==2 || model==3) && (user.payStatus || !room.isPay)" v-show="!isPlaying" v-on:click="clickPlay()">
+        <!--遮罩层，以便文字能看清-->
+        <div class="shade" v-if="model == 1 || model == 7 || (!user.payStatus && room.isPay)"></div>
+        <div class="play-view" v-if="(model==0 || model == 8) && (user.payStatus || !room.isPay)" v-show="!isPlaying" v-on:click="clickPlay()">
             <img class="play-icon" src="../assets/play.png">
         </div>
+            
+        <!--播放视频的加载动画-->
         <div id="loading" v-show="loadingShow">
             <div class="content1">
                 <div class="arc1"></div>
@@ -20,7 +24,7 @@
         <!-- 视频直播 -->
         <div class="vedio" v-if="model==0 && (user.payStatus || !room.isPay)">
             <video v-if="hlsdownstream" id="hlsVideo" v-bind:src=hlsdownstream v-bind:poster="hlsimg" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline
- controls autoplay></video>
+    controls autoplay></video>
             <div v-if="!hlsdownstream" class="wait">
                 当前为图文直播
             </div>
@@ -48,48 +52,47 @@
             <span v-else class="start-notice no_btn" @click="book">预约直播</span>          
         </div>
 
-       <!-- 时间到了直播未开始 -->
+        <!-- 时间到了直播未开始 -->
         <div v-bind:class="[{ active: (user.payStatus || !room.isPay) }, waitClass]" v-if="model==7 || model==3">
             直播即将开始，请耐心等待
         </div>
-        
+            
         <!--直播结束 还没有回顾视频-->
         <div class="wait active" v-if="model == 6 && isVideo == 2 && (user.payStatus || !room.isPay)">
-          直播已结束，敬请期待直播回顾！
+            直播已结束，敬请期待直播回顾！
         </div>
 
         <!-- 直播结束 -->
         <div class="living_end" v-if="(model == 6 && !isPlaying && isVideo == 1) && (user.payStatus || !room.isPay)">  
             <p @click="clickPlay()" v-show="!isPlaying">
-            	<span></span>
+                <span></span>
             </p>
         </div>
 
-      <!--直播预告-->
-      <div v-if="room.status == 0 && !user.payStatus && room.isPay">
-        
-        <p class="pay-tips" style="margin-top:.2rem;">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
-      </div>
+        <!--直播预告-->
+        <div v-if="room.status == 0 && !user.payStatus && room.isPay">
+            <p class="pay-tips" style="margin-top:.2rem;">该直播须付费才能观看，付费请点击<a href="javascript:;" :payUrl="payUrl" @click="buy">立即购买</a></p>
+        </div>
 
         <!--直播中和直播回顾-->
         <div class="liv-pay" v-if="(room.status == 2 || room.status == 4)">
-          <div v-if="!user.payStatus && room.isPay">
-            <p class="pay-tips">
-                本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
-            </p>
-            <p class="fare">票价：¥ {{room.fare}}</p> 
-            <p class="pay-opera">
-              <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
-              <a href="javascript:;" class="start-notice btn2" @click="buy">立即购买</a>
-            </p>
-          </div>
+            <div v-if="!user.payStatus && room.isPay">
+                <p class="pay-tips">
+                    本场直播为付费直播，请购买后观看。<br>（已购买用户直接登录观看）
+                </p>
+                <p class="fare">票价：¥ {{room.fare}}</p> 
+                <p class="pay-opera">
+                    <a href="javascript:;" @click="login()" class="start-notice btn1" v-if="isLogin == 2">登录</a>
+                    <a href="javascript:;" class="start-notice btn2" @click="buy">立即购买</a>
+                </p>
+            </div>
         </div>
 
         <!-- ppt直播 -->
         <div class="ppt_living" v-if="model == 5 && (user.payStatus || !room.isPay)">
-			<!--<p>如果您听不到直播声音，建议用电脑观看PPT直播。</p>-->
+            <!--<p>如果您听不到直播声音，建议用电脑观看PPT直播。</p>-->
             <audio v-if="hlsVoiceDownstream" id="voice" v-bind:src="hlsVoiceDownstream" controls autoplay>
-               (#_#) 你的设备不支持播放视频直播... 
+                (#_#) 你的设备不支持播放视频直播... 
             </audio>
             
             <audio v-else id="media_audio" webkit-playsinline playsinline controls  autoplay v-bind:src=hlsdownstream>
@@ -98,15 +101,20 @@
 
             <img v-bind:src="pptimg" alt="">
         </div>
-        
-        <!-- 视频直播 -->
+            
+        <!-- 视频点播 -->
         <div class="vodlook" v-if="model == 8 && (user.payStatus || !room.isPay)">
             <video v-bind:src="vodliving" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="vodliving"></video>
         </div>
 
         <!-- 查看回顾 -->
-        <div class="vodlook" v-if="model==6 && (user.payStatus || !room.isPay)">
+        <div class="vodlook" v-if="model == 6 && (user.payStatus || !room.isPay)">
             <video v-bind:src="vodvideo" v-bind:poster="reviewUrl" v-show="isPlaying" v-on:playing="playing" webkit-playsinline playsinline controls id="myAudio" onended="myFunction()"></video>
+        </div>
+
+        <!--微信中点击购买，出现的提示-->
+        <div class="weixin-overlay" v-show="weixinShow">
+            <div class="browser-open">点击右上角在浏览器中打开</div>
         </div>
     </nav>
 </template>
@@ -149,14 +157,15 @@ export default {
       type: String
     },
     hlsVoiceDownstream: {
-			type: String
-		}
+      type: String
+    }
   },
   data() {
     return {
       isLogin: userLogin.loginType,
       isPlaying: false,
       loadingShow: false,
+      weixinShow: false,
       day: 0,
       hour: 0,
       minute: 0,
@@ -168,7 +177,7 @@ export default {
         userLogin.roomId +
         "&source=WAP&backUrl=" +
         location.href,
-        waitClass: 'wait'
+      waitClass: "wait"
     };
   },
   methods: {
@@ -187,27 +196,24 @@ export default {
     },
     clickPlay: function() {
       document.querySelectorAll("video")[0].play();
-      this.isPlaying = true;      
+      this.isPlaying = true;
       this.loadingShow = true;
     },
     playing: function() {
       this.isPlaying = true;
       this.loadingShow = false;
-      
     },
 
     buy() {
-      if(is_weixn()) {
-        alert("come")
-
-      }else{
+      if (is_weixn()) {
+        this.weixinShow = true;
+      } else {
         if (userLogin.loginType == 2) {
-            showLogin();
-            return;
+          showLogin();
+          return;
         }
         location.href = this.payUrl;
       }
-     
     },
     login() {
       showLogin();
@@ -258,7 +264,8 @@ export default {
   float: right;
 }
 
-#media_audio,#voice {
+#media_audio,
+#voice {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -318,6 +325,7 @@ video,
   font-size: 0.32rem;
   color: #fff;
   margin-top: 0.44rem;
+  position: relative;
 }
 .living_end {
   position: relative;
@@ -364,6 +372,7 @@ video,
 
 .notice {
   text-align: center;
+  position: relative;
 }
 
 .notice h4 {
@@ -431,6 +440,7 @@ video,
   color: #fff;
   margin-top: 0.44rem;
   text-align: center;
+  position: relative;
 }
 .pay-tips a {
   color: #5aabff;
@@ -440,6 +450,9 @@ video,
   font-size: 0;
   text-align: center;
 }
+.liv-pay {
+  position: relative;
+}
 .liv-pay a {
   display: inline-block;
   margin: 0.44rem 0.32rem 0;
@@ -448,49 +461,151 @@ video,
   background: #e0e0e0;
 }
 .wait.active {
-   line-height: 4.05rem;
-   margin-top: 0;
+  line-height: 4.05rem;
+  margin-top: 0;
 }
 
 .fare {
-  font-size: .28rem;
-  line-height: .32rem;
-  color:#fff;
+  font-size: 0.28rem;
+  line-height: 0.32rem;
+  color: #fff;
   text-align: center;
-  margin-top:.2rem;
+  margin-top: 0.2rem;
 }
 .fare + .start-notice {
-  margin-top:.1rem;
+  margin-top: 0.1rem;
 }
 
-#loading{width:25px;height: 25px; position: absolute;left:50%;top:40%;margin:0 0 0 -12px;}
-#loading .content1 , #loading .content2{ width:25px; height:25px; position:absolute;}
-#loading .content1 div , #loading .content2 div{ width:8px; height:8px; background:#fff; position:absolute; border-radius:50%; animation:2s linear infinite loadingMove; -webkit-animation:2s linear infinite loadingMove;}
-#loading .content1 .arc1 , #loading .content2 .arc1{ left:0; top:0;}
-#loading .content1 .arc2 , #loading .content2 .arc2{ right:0; top:0;}
-#loading .content1 .arc3 , #loading .content2 .arc3{ right:0; bottom:0;}
-#loading .content1 .arc4 , #loading .content2 .arc4{ left:0; bottom:0;}
-#loading .content2{ transform:rotate(45deg); -webkit-transform:rotate(45deg);}
-@keyframes loadingMove{
-    0%{ transform:scale(1);}
-    50%{ transform:scale(0);}
-    100%{ transform:scale(1);}
+.weixin-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 888889;
 }
-@-webkit-keyframes loadingMove{
-    0%{ -webkit-transform:scale(1);}
-    50%{ -webkit-transform:scale(0);}
-    100%{ -webkit-transform:scale(1);}
+.browser-open {
+  position: absolute;
+  height: 2rem;
+  right: 0.46rem;
+  top: 0;
+  font-size: 0.36rem;
+  color: #fff;
+  z-index: 999999;
+}
+.browser-open:after {
+  content: "";
+  background: url(../assets/jiantou.png) 0 0 no-repeat;
+  width: 1.1rem;
+  height: 1.62rem;
+  background-size: contain;
+  display: inline-block;
+  margin-left: 0.16rem;
 }
 
-#loading .content1 .arc1{ animation-delay:-1.5s;}
-#loading .content2 .arc1{ animation-delay:-1.3s;}
-#loading .content1 .arc2{ animation-delay:-1.1s;}
-#loading .content2 .arc2{ animation-delay:-0.9s;}
-#loading .content1 .arc3{ animation-delay:-0.7s;}
-#loading .content2 .arc3{ animation-delay:-0.5s;}
-#loading .content1 .arc4{ animation-delay:-0.3s;}
-#loading .content2 .arc4{ animation-delay:-0.1s;}
+.shade {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
 
+#loading {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  margin: 0 0 0 -12px;
+}
+#loading .content1,
+#loading .content2 {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+}
+#loading .content1 div,
+#loading .content2 div {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  position: absolute;
+  border-radius: 50%;
+  animation: 2s linear infinite loadingMove;
+  -webkit-animation: 2s linear infinite loadingMove;
+}
+#loading .content1 .arc1,
+#loading .content2 .arc1 {
+  left: 0;
+  top: 0;
+}
+#loading .content1 .arc2,
+#loading .content2 .arc2 {
+  right: 0;
+  top: 0;
+}
+#loading .content1 .arc3,
+#loading .content2 .arc3 {
+  right: 0;
+  bottom: 0;
+}
+#loading .content1 .arc4,
+#loading .content2 .arc4 {
+  left: 0;
+  bottom: 0;
+}
+#loading .content2 {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+@keyframes loadingMove {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@-webkit-keyframes loadingMove {
+  0% {
+    -webkit-transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+  }
+}
 
-
+#loading .content1 .arc1 {
+  animation-delay: -1.5s;
+}
+#loading .content2 .arc1 {
+  animation-delay: -1.3s;
+}
+#loading .content1 .arc2 {
+  animation-delay: -1.1s;
+}
+#loading .content2 .arc2 {
+  animation-delay: -0.9s;
+}
+#loading .content1 .arc3 {
+  animation-delay: -0.7s;
+}
+#loading .content2 .arc3 {
+  animation-delay: -0.5s;
+}
+#loading .content1 .arc4 {
+  animation-delay: -0.3s;
+}
+#loading .content2 .arc4 {
+  animation-delay: -0.1s;
+}
 </style>
