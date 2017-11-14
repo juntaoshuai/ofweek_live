@@ -217,8 +217,8 @@ export default {
 
                             $this.watchMode=data.body.watchMode
 
-                            //会员模式下，允许游客进入展台，10秒后弹出登录提示
-                            // 游客进入游客模式展台，10秒后不应弹出登录弹框  
+                            //会员模式下，允许游客进入展台，180秒后弹出登录提示
+                            // 游客进入游客模式展台，180秒后不应弹出登录弹框  
                             if($this.watchMode==1 && $this.loginType == 2){
                                 setTimeout(()=>{
                                     showLogin();
